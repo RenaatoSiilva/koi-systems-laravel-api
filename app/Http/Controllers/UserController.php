@@ -48,32 +48,30 @@ class UserController extends Controller
             'description'   => 'required',
         ]);
 
-        if(!$validated){
+        if (!$validated) {
             return response()->json([
-            'success'   =>  false,
-            'message'   =>  $request->validate->fails()
+                'success'   =>  false,
+                'message'   =>  $request->validate->fails()
             ]);
         }
 
         $update = User::where('email', $request->email)
-        ->update([
-            'name'          =>      $request->name,
-            'surname'       =>      $request->surname,
-            'description'   =>      $request->description
-        ]);
+            ->update([
+                'name'          =>      $request->name,
+                'surname'       =>      $request->surname,
+                'description'   =>      $request->description
+            ]);
 
         $user = User::where('email', $request->email)->first();
 
         return response()->json([
             'message' => 'User Updated Successful',
             'success' =>  true,
-            'data'    =>  $user
+            'data'    =>  $user,
         ]);
-
-        
     }
 
-   
+
     public function destroy(Request $request)
     {
 
@@ -83,8 +81,6 @@ class UserController extends Controller
             'message' => 'User Deleted Successful',
             'success' =>  true,
         ]);
-
-        
     }
 
 
@@ -107,6 +103,13 @@ class UserController extends Controller
             return response()->json(['success' => false, 'error' => "Invalid email or password!"]);
         }
 
+        $device_token = Str::random(40);
+
+        User::where('email', $request->email)
+            ->update([
+                'device_token'      =>      $device_token
+            ]);
+
         $user = Auth::user();
         $user->save();
 
@@ -116,6 +119,21 @@ class UserController extends Controller
             "name"              => $user->name,
             "description"       => $user->description,
             "surname"           => $user->surname,
+            "device_token"      => $device_token
         ]);
+    }
+
+    public function getInfo(Request $request)
+    {
+
+        $user = User::where('device_token', $request->device_token)->first();
+        
+        if ($user) {
+            return response()->json([
+                "name"              => $user->name,
+                "description"       => $user->description,
+                "surname"           => $user->surname,
+            ]);
+        }
     }
 }

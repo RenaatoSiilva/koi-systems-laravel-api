@@ -25,5 +25,6 @@ Route::controller(UserController::class)->group(function () {
     Route::post('/login', 'login');
     Route::post('/update', 'update');
     Route::post('/destroy', 'destroy');
+    Route::post('/getInfo', 'getInfo');
 
 });
