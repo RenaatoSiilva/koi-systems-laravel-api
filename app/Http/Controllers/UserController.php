@@ -105,10 +105,6 @@ class UserController extends Controller
 
         $device_token = Str::random(40);
 
-        User::where('email', $request->email)
-            ->update([
-                'device_token'      =>      $device_token
-            ]);
 
         $user = Auth::user();
         $user->save();
@@ -119,7 +115,6 @@ class UserController extends Controller
             "name"              => $user->name,
             "description"       => $user->description,
             "surname"           => $user->surname,
-            "device_token"      => $device_token
         ]);
     }
 
